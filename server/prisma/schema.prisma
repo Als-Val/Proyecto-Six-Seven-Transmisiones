@@ -15,3 +15,38 @@ model User {
 
 // Hace base de datos donde definimos las tablas y relaciones
 // No tocar package - lock.json NI POR NADA DEL MUNDO 
+
+enum EstadoEquipo {
+  BUENO
+  MALO
+  PERDIDO
+}
+
+model Equipo {
+  id          String       @id @default(uuid())
+  codigo      String       @unique
+  nombre      String
+  tipo        String
+  descripcion String?
+  estado      EstadoEquipo @default(BUENO)
+
+  kitId       String?
+  kit         Kit?         @relation(fields: [kitId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([kitId])
+  @@index([estado])
+}
+
+model Kit {
+  id          String   @id @default(uuid())
+  nombre      String
+  descripcion String?
+
+  equipos     Equipo[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
