@@ -7,24 +7,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Ruta padre que envuelve todo el sistema con el Layout (Sidebar + Contenido) */}
         <Route path="/" element={<Layout />}>
-          
-          {/* Si entras a localhost:5173 pelado, te redirige a tu módulo de finanzas */}
-          <Route index element={<Navigate to="/finanzas/costos" replace />} />
-          
-          {/* --- RUTAS DE AGENDA --- */}
-          <Route path="agenda/transmisiones" element={<EnConstruccion />} />
-          <Route path="agenda/staff" element={<EnConstruccion />} />
 
-          {/* --- RUTAS DE INVENTARIO --- */}
+          <Route index element={<Navigate to="/inicio" replace />} />
+          
+          <Route path="inicio" element={<EnConstruccion />} />
+          
+          <Route path="agenda" element={<EnConstruccion />} />
+
           <Route path="inventario/equipos" element={<EnConstruccion />} />
           <Route path="inventario/mermas" element={<EnConstruccion />} />
-
-          {/* --- RUTAS DE AUSPICIOS --- */}
+    
           <Route path="auspicios/marcas" element={<EnConstruccion />} />
 
-          {/* --- RUTAS DE FINANZAS (TU MÓDULO) --- */}
           <Route path="finanzas/costos" element={<EnConstruccion />} />
           <Route path="finanzas/resumen" element={<EnConstruccion />} />
 

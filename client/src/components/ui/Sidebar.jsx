@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu } from 'antd';
 import { 
   CircleDollarSign, ReceiptText, PieChart,
-  CalendarDays, Package, Handshake, Users, MonitorOff
+  CalendarDays, Package, Handshake, Users, MonitorOff, 
+  Home
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -12,13 +13,14 @@ const Sidebar = () => {
 
   const menuItems = [
     {
-      key: 'grp-agenda',
+      key: '/inicio', 
+      label: 'Inicio',
+      icon: <Home size={18} />,
+    },
+    {
+      key: '/agenda',
       label: 'Agenda',
       icon: <CalendarDays size={18} />,
-      children: [
-        { key: '/agenda/transmisiones', label: 'Transmisiones' },
-        { key: '/agenda/staff', label: 'Staff', icon: <Users size={16} /> }
-      ],
     },
     {
       key: 'grp-inventario',
