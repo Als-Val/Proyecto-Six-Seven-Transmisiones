@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Menu, Typography } from 'antd';
 import { 
   CircleDollarSign, ReceiptText, PieChart,
-  CalendarDays, Package, Handshake, Users, MonitorOff
+  CalendarDays, Package, Handshake, Users, MonitorOff, 
+  Home
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -14,14 +15,15 @@ const Sidebar = () => {
 
   const menuItems = [
     {
-      key: 'grp-agenda',
+      key: '/inicio', 
+      label: 'Inicio',
+      icon: <Home size={18} />,
+    },
+    {
+      key: '/agenda',
       modulo: 'AGENDA',
       label: 'Agenda',
       icon: <CalendarDays size={18} />,
-      children: [
-        { key: '/agenda/transmisiones', label: 'Transmisiones' },
-        { key: '/agenda/staff', label: 'Staff', icon: <Users size={16} />, modulo: 'PERSONAL' }
-      ],
     },
     {
       key: 'grp-inventario',
@@ -59,10 +61,11 @@ const Sidebar = () => {
   const quitarModulo = ({ modulo, ...item }) => item;
   const itemsVisibles = menuItems.filter(permitido).map((item) => ({
     ...quitarModulo(item),
-    children: item.children.filter(permitido).map(quitarModulo),
+    // Inicio y Agenda son enlaces directos: no tienen submenú.
+    ...(item.children ? { children: item.children.filter(permitido).map(quitarModulo) } : {}),
   }));
 
-  const allGroupKeys = itemsVisibles.map(item => item.key);
+  const allGroupKeys = itemsVisibles.filter(item => item.children).map(item => item.key);
 
   const handleMenuClick = (e) => {
     navigate(e.key);
