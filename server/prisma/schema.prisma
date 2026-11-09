@@ -137,6 +137,8 @@ model Transmision {
   requerimientos  RequerimientoPersonal[]
   historial       HistorialTransmision[]
   cobros          Cobro[]
+  gastos          Gasto[]
+
 
   @@index([inicio])
   @@index([estado, inicio])
@@ -192,17 +194,19 @@ model Cobro {
 
 
 model Gasto {
-  id_g           Int          @id @default(autoincrement())
-  tipo_gasto     String       @db.VarChar(100)
-  descripcion    String       @db.VarChar(255)
-  valor          Int
-  fecha          DateTime     @default(now())
-  Id_transmision Int?         
-  
-  transmision    Transmision? @relation(fields: [Id_transmision], references: [id_t], onDelete: SetNull)
+  id            Int          @id @default(autoincrement())
+  tipo          String       @db.VarChar(100)
+  descripcion   String       @db.VarChar(255)
+  valor         Int
+  fecha         DateTime     @default(now()) @db.Date
+  transmisionId Int?
 
-  @@map("gasto")
+  transmision   Transmision? @relation(fields: [transmisionId], references: [id], onDelete: Restrict)
+
+  @@index([fecha])
+  @@map("gastos")
 }
+
 
 // Hace base de datos donde definimos las tablas y relaciones
 // No tocar package - lock.json NI POR NADA DEL MUNDO
