@@ -7,11 +7,184 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Perfil {
+  DUENO
+  CONTADOR
+  JEFE_TECNICO
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String
+  passwordHash String
+  perfil       Perfil
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tarifas   Tarifa[]
+  historial HistorialTransmision[]
+  cobros    Cobro[]
+}
+
+// ===========================================================================
+// MÓDULO — COTIZACIONES Y AGENDA (RF08 a RF11)
+// ===========================================================================
+
+enum TipoServicio {
+  BASICO
+  COMPLEJO
+}
+
+enum EstadoTransmision {
+  COTIZADO
+  AUTORIZADO_TERRENO
+  FINALIZADA
+  RECHAZADA
+  CANCELADA
+}
+
+enum AccionTransmision {
+  CREACION
+  EDICION
+  AUTORIZACION
+  RECHAZO
+  CANCELACION
+  CIERRE
+}
+
+/// Compartido con Ingresos (RF26). SALDO lo usa ese módulo.
+enum TipoCobro {
+  GARANTIA
+  SALDO
+}
+
+model Cliente {
+  id            Int      @id @default(autoincrement())
+  razonSocial   String   @db.VarChar(150)
+  /// Sin puntos, con guion: 76881903-5. Opcional (personas naturales, iglesias).
+  rut           String?  @unique @db.VarChar(12)
+  contacto      String?  @db.VarChar(100)
+  telefono      String?  @db.VarChar(20)
+  email         String?  @db.VarChar(150)
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  transmisiones Transmision[]
+  @@map("clientes")
+}
+
+model Recinto {
+  id            Int      @id @default(autoincrement())
+  nombre        String   @db.VarChar(120)
+  direccion     String   @db.VarChar(200)
+  comuna        String   @db.VarChar(60)
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  transmisiones Transmision[]
+  // Único sin distinguir mayúsculas: índice funcional en el SQL de la migración.
+  @@map("recintos")
+}
+
+/// Catálogo compartido: Personal (RF12, RF14) y Remuneraciones (RF30) lo referencian.
+model Funcion {
+  id              Int     @id @default(autoincrement())
+  nombre          String  @unique @db.VarChar(40)
+  activo          Boolean @default(true)
+  requerimientos  RequerimientoPersonal[]
+  @@map("funciones")
+}
+
+/// Versiones de tarifas. Solo INSERT: la vigente es la de mayor vigenteDesde.
+model Tarifa {
+  id                  Int      @id @default(autoincrement())
+  tarifaBaseBasico    Int
+  tarifaBaseComplejo  Int
+  valorHora           Int
+  valorPersona        Int
+  valorKit            Int
+  recargoKitNuevoPct  Int      @db.SmallInt
+  vigenteDesde        DateTime @unique @default(now()) @db.Timestamptz(3)
+  creadoPorId         Int
+  creadoPor           User     @relation(fields: [creadoPorId], references: [id], onDelete: Restrict)
+  transmisiones       Transmision[]
+  @@map("tarifas")
+}
+
+model Transmision {
+  id                    Int               @id @default(autoincrement())
+  clienteId             Int
+  recintoId             Int
+  tarifaId              Int
+  tipoServicio          TipoServicio
+  inicio                DateTime          @db.Timestamptz(3)  // el término se calcula
+  duracionMin           Int
+  cantidadKits          Int               @db.SmallInt
+  kitsUltimaGeneracion  Int               @default(0) @db.SmallInt
+  observacionEquipos    String?
+  /// Valor acordado con el cliente, en pesos. El sugerido se recalcula con tarifaId.
+  valorCotizado         Int
+  estado                EstadoTransmision @default(COTIZADO)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  cliente         Cliente   @relation(fields: [clienteId], references: [id], onDelete: Restrict)
+  recinto         Recinto   @relation(fields: [recintoId], references: [id], onDelete: Restrict)
+  tarifa          Tarifa    @relation(fields: [tarifaId], references: [id], onDelete: Restrict)
+  requerimientos  RequerimientoPersonal[]
+  historial       HistorialTransmision[]
+  cobros          Cobro[]
+
+  @@index([inicio])
+  @@index([estado, inicio])
+  @@map("transmisiones")
+}
+
+model RequerimientoPersonal {
+  transmisionId  Int
+  funcionId      Int
+  cantidad       Int         @db.SmallInt
+  transmision    Transmision @relation(fields: [transmisionId], references: [id], onDelete: Cascade)
+  funcion        Funcion     @relation(fields: [funcionId], references: [id], onDelete: Restrict)
+  @@id([transmisionId, funcionId])
+  @@map("requerimientos_personal")
+}
+
+/// Bitácora de acciones críticas (§6.4). Solo INSERT.
+model HistorialTransmision {
+  id              Int                @id @default(autoincrement())
+  transmisionId   Int
+  accion          AccionTransmision
+  estadoNuevo     EstadoTransmision
+  motivo          String?            @db.VarChar(300)   // obligatorio en RECHAZO y CANCELACION
+  usuarioId       Int
+  fechaHora       DateTime           @default(now()) @db.Timestamptz(3)
+  ip              String             @db.VarChar(45)    // IPv4 o IPv6
+  transmision     Transmision        @relation(fields: [transmisionId], references: [id], onDelete: Restrict)
+  usuario         User               @relation(fields: [usuarioId], references: [id], onDelete: Restrict)
+  @@index([transmisionId, fechaHora])
+  @@map("historial_transmisiones")
+}
+
+/// Tabla de Ingresos. Agenda solo inserta y lee filas de tipo GARANTIA.
+model Cobro {
+  id               Int         @id @default(autoincrement())
+  transmisionId    Int
+  tipo             TipoCobro
+  monto            Int
+  fechaPago        DateTime    @db.Date
+  comprobanteUrl   String      @db.VarChar(255)
+  registradoPorId  Int
+  registradoEn     DateTime    @default(now()) @db.Timestamptz(3)
+  ip               String      @db.VarChar(45)
+  transmision      Transmision @relation(fields: [transmisionId], references: [id], onDelete: Restrict)
+  registradoPor    User        @relation(fields: [registradoPorId], references: [id], onDelete: Restrict)
+  @@index([transmisionId, tipo])
+  @@map("cobros")
 }
 
 // Hace base de datos donde definimos las tablas y relaciones
-// No tocar package - lock.json NI POR NADA DEL MUNDO 
+// No tocar package - lock.json NI POR NADA DEL MUNDO

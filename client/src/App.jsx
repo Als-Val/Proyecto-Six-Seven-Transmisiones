@@ -1,17 +1,33 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Spin } from 'antd';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/ui/Layout';
-import { 
-  Agenda, ControlPagos, GastosOperativos, Equipos, Inicio, 
-  Marcas, Mermas, Resumen, TrabajadoresCargos 
+
+import Login from './pages/Login';
+import {
+  Agenda, ControlPagos, GastosOperativos, Equipos, Inicio,
+  Marcas, Mermas, Resumen, TrabajadoresCargos
 } from './pages';
 
+function RutaProtegida({ children }) {
+  const { usuario, cargando } = useAuth();
+  const location = useLocation();
+
+  if (cargando) return <Spin fullscreen />;
+  if (!usuario) return <Navigate to="/login" replace state={{ desde: location.pathname }} />;
+  return children;
+}
 
 function App() {
   return (
+    <AuthProvider>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path="/login" element={<Login />} />
+
+        {/* Ruta padre que envuelve todo el sistema con el Layout (Sidebar + Contenido) */}
+        <Route path="/" element={<RutaProtegida><Layout /></RutaProtegida>}>
 
           <Route index element={<Navigate to="/inicio" replace />} />
           
@@ -33,6 +49,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
 
