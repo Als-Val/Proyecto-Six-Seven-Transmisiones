@@ -1,7 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/ui/Layout';
-import EnConstruccion from './components/ui/EnConstruccion';
+import { 
+  Agenda, ControlPagos, GastosOperativos, Equipos, Inicio, 
+  Marcas, Mermas, Resumen, TrabajadoresCargos 
+} from './pages';
+
 
 function App() {
   return (
@@ -11,17 +15,20 @@ function App() {
 
           <Route index element={<Navigate to="/inicio" replace />} />
           
-          <Route path="inicio" element={<EnConstruccion />} />
+          <Route path="inicio" element={<Inicio />} />
           
-          <Route path="agenda" element={<EnConstruccion />} />
+          <Route path="agenda" element={<Agenda />} />
 
-          <Route path="inventario/equipos" element={<EnConstruccion />} />
-          <Route path="inventario/mermas" element={<EnConstruccion />} />
+          <Route path="personal/trabajadores-cargos" element={<TrabajadoresCargos />} />
+          <Route path="personal/control-pagos" element={<ControlPagos />} />
+
+          <Route path="inventario/equipos" element={<Equipos />} />
+          <Route path="inventario/mermas" element={<Mermas />} />
     
-          <Route path="auspicios/marcas" element={<EnConstruccion />} />
+          <Route path="auspicios/marcas" element={<Marcas />} />
 
-          <Route path="finanzas/costos" element={<EnConstruccion />} />
-          <Route path="finanzas/resumen" element={<EnConstruccion />} />
+          <Route path="finanzas/gastos" element={<GastosOperativos />} />
+          <Route path="finanzas/resumen" element={<Resumen />} />
 
         </Route>
       </Routes>

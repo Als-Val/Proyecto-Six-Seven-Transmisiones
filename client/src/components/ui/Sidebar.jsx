@@ -32,6 +32,15 @@ const Sidebar = () => {
       ],
     },
     {
+      key: 'grp-personal',
+      label: 'Personal',
+      icon: <Users size={18} />,
+      children: [
+        { key: '/personal/trabajadores-cargos', label: 'Trabajadores y Cargos' },
+        { key: '/personal/control-pagos', label: 'Control de Pagos' },
+      ],
+    },
+    {
       key: 'grp-auspicios',
       label: 'Auspicios',
       icon: <Handshake size={18} />,
@@ -44,7 +53,7 @@ const Sidebar = () => {
       label: 'Finanzas',
       icon: <CircleDollarSign size={18} />,
       children: [
-        { key: '/finanzas/costos', label: 'Costos Operativos', icon: <ReceiptText size={16} /> },
+        { key: '/finanzas/gastos', label: 'Gastos Operativos', icon: <ReceiptText size={16} /> },
         { key: '/finanzas/resumen', label: 'Resumen Mensual', icon: <PieChart size={16} /> },
       ],
     },
