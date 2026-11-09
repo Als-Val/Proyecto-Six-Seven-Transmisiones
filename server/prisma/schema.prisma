@@ -186,5 +186,23 @@ model Cobro {
   @@map("cobros")
 }
 
+// ===========================================================================
+// MÓDULO — GASTOS OPERATIVOS
+// ===========================================================================
+
+
+model Gasto {
+  id_g           Int          @id @default(autoincrement())
+  tipo_gasto     String       @db.VarChar(100)
+  descripcion    String       @db.VarChar(255)
+  valor          Int
+  fecha          DateTime     @default(now())
+  Id_transmision Int?         
+  
+  transmision    Transmision? @relation(fields: [Id_transmision], references: [id_t], onDelete: SetNull)
+
+  @@map("gasto")
+}
+
 // Hace base de datos donde definimos las tablas y relaciones
 // No tocar package - lock.json NI POR NADA DEL MUNDO
