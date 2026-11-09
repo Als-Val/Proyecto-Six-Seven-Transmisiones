@@ -2,9 +2,9 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Menu, Typography } from 'antd';
 import { 
-  CircleDollarSign, ReceiptText, PieChart,
-  CalendarDays, Package, Handshake, Users, MonitorOff, 
-  Home
+  CircleDollarSign, PieChart,
+  Calendar, Package, Handshake, Users, 
+  Home, Monitor, Trash2, Tag, UserCheck, CreditCard, Receipt
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -23,7 +23,7 @@ const Sidebar = () => {
       key: '/agenda',
       modulo: 'AGENDA',
       label: 'Agenda',
-      icon: <CalendarDays size={18} />,
+      icon: <Calendar size={18} />,
     },
     {
       key: 'grp-inventario',
@@ -31,8 +31,18 @@ const Sidebar = () => {
       label: 'Inventario',
       icon: <Package size={18} />,
       children: [
-        { key: '/inventario/equipos', label: 'Equipos' },
-        { key: '/inventario/mermas', label: 'Mermas', icon: <MonitorOff size={16} /> }
+        { key: '/inventario/equipos', label: 'Equipos', icon: <Monitor size={16} /> },
+        { key: '/inventario/mermas', label: 'Mermas', icon: <Trash2 size={16} /> }
+      ],
+    },
+    {
+      key: 'grp-personal',
+      modulo: 'PERSONAL',
+      label: 'Personal',
+      icon: <Users size={18} />,
+      children: [
+        { key: '/personal/trabajadores-cargos', label: 'Trabajadores y Cargos', icon: <UserCheck size={16} /> },
+        { key: '/personal/control-pagos', label: 'Control de Pagos', icon: <CreditCard size={16} /> },
       ],
     },
     {
@@ -41,7 +51,7 @@ const Sidebar = () => {
       label: 'Auspicios',
       icon: <Handshake size={18} />,
       children: [
-        { key: '/auspicios/marcas', label: 'Marcas' }
+        { key: '/auspicios/marcas', label: 'Marcas', icon: <Tag size={16} /> },
       ],
     },
     {
@@ -50,7 +60,7 @@ const Sidebar = () => {
       label: 'Finanzas',
       icon: <CircleDollarSign size={18} />,
       children: [
-        { key: '/finanzas/costos', label: 'Costos Operativos', icon: <ReceiptText size={16} /> },
+        { key: '/finanzas/gastos', label: 'Gastos Operativos', icon: <Receipt size={16} /> },
         { key: '/finanzas/resumen', label: 'Resumen Mensual', icon: <PieChart size={16} /> },
       ],
     },

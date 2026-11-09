@@ -1,0 +1,9 @@
+export { default as Agenda } from './Agenda';
+export { default as ControlPagos } from './ControlPagos';
+export { default as GastosOperativos } from './GastosOperativos'; 
+export { default as Equipos } from './Equipos';
+export { default as Inicio } from './Inicio';
+export { default as Marcas } from './Marcas';
+export { default as Mermas } from './Mermas';
+export { default as Resumen } from './Resumen';
+export { default as TrabajadoresCargos } from './TrabajadoresCargos';
