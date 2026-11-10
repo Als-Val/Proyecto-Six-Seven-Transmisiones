@@ -28,6 +28,7 @@ out/
 Thumbs.db
 .vscode/
 .idea/
+.claude
 
 # Prisma
 /server/prisma/*.db
