@@ -1,21 +1,31 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import Sidebar from './Sidebar'; 
 
-const Layout = () => {
+function Layout() {
+  const estiloContenedor = {
+    display: 'flex',
+    minHeight: '100vh', // Asegura que ocupe toda la altura de la pantalla
+    backgroundColor: '#f5f6fa'
+  };
+
+  const estiloContenidoPrincipal = {
+    flex: 1, // Toma todo el espacio sobrante a la derecha
+    padding: '30px',
+    overflowY: 'auto' // Permite hacer scroll solo en el contenido, sin mover el menú
+  };
+
   return (
-    // Se fuerza el Flexbox horizontal para asegurar que la barra quede a la izquierda
-    <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-      
+    <div style={estiloContenedor}>
+      {/* El menú se queda fijo a la izquierda */}
       <Sidebar />
       
-      {/* Contenedor derecho para el contenido dinámico */}
-      <div style={{ flex: 1, padding: '2rem', overflowY: 'auto', backgroundColor: '#f9fafb' }}>
-        <Outlet />
-      </div>
-
+      {/* El espacio de la derecha donde el enrutador inyectará las páginas */}
+      <main style={estiloContenidoPrincipal}>
+        <Outlet /> 
+      </main>
     </div>
   );
-};
+}
 
 export default Layout;

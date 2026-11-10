@@ -1,17 +1,14 @@
 import React from 'react';
-import PageHeader from '../components/ui/PageHeader';
-import EnConstruccion from '../components/ui/EnConstruccion'; 
 
-const Agenda = () => {
+import EnConstrucción from '../components/ui/EnConstruccion';
+
+function Agenda() {
   return (
-    <div className="p-2">
-      <PageHeader 
-        title="Agenda de Transmisiones" 
-        description="Consulta las próximas fechas y eventos calendarizados." 
-      />
-      <EnConstruccion />
+    <div>
+      <h1>Agenda</h1>
+      <EnConstrucción nombreModulo="Agenda"/>
     </div>
   );
-};
+}
 
 export default Agenda;
